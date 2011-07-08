@@ -66,7 +66,7 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
             scale = pm.Exponential('scale', .1, value=.08)            
 
             # This parameter controls the degree of differentiability of the field.
-            diff_degree = (value=.5, observed=True)
+            diff_degree = pm.Uniform('diff_degree', .01, 3, value=0.5, observed=True)
 
             # The nugget variance.
             V = pm.Exponential('V', .1, value=.1)
