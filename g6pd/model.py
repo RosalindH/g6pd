@@ -36,7 +36,7 @@ from scipy.stats import distributions
 
 constrained = True
 threshold_val = 0.0001
-max_p_above = 0.00001
+max_p_above = 0.0001
 
 def mean_fn(x,m):
     return pm.gp.zero_fn(x)+m
