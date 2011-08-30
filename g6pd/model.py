@@ -82,30 +82,30 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
             #    else:
             #        return 0
             
-                coef = np.array([-0.23802427, 0.63047883, -0.12580110, -0.01148692])
+            coef = np.array([-0.23802427, 0.63047883, -0.12580110, -0.01148692])
 
-    def poly(x,coef=coef):
-        return np.sum([c_*x**(power) for (power, c_) in enumerate(coef)], axis=0)
+            def poly(x,coef=coef):
+                return np.sum([c_*x**(power) for (power, c_) in enumerate(coef)], axis=0)
 
-    def linkfn(x, a=[0,0], coef=coef):
-        return pm.flib.stukel_invlogit(poly(x,coef), *a)
+            def linkfn(x, j=[0,0], coef=coef):
+                return pm.flib.stukel_invlogit(poly(x,coef), *j)
 
-    def inverse_poly(y, coef=coef):
-        poly = coef[::-1] + np.array([0,0,0,-y])
-        roots = filter(lambda x: not x.imag, np.roots(poly))
-        return np.array(roots).real
+            def inverse_poly(y, coef=coef):
+                poly = coef[::-1] + np.array([0,0,0,-y])
+                roots = filter(lambda x: not x.imag, np.roots(poly))
+                return np.array(roots).real
 
-    def inverse_linkfn(y, a=[0,0], coef=coef, range=range):
-        all_sol = inverse_poly(pm.flib.stukel_logit(y, *a), coef)
-        # return all_sol[np.argmin(np.abs(all_sol))]
-        if len(all_sol)>1:
-            raise RuntimeError
-        return all_sol[0]
+            def inverse_linkfn(y, j=[0,0], coef=coef, range=range):
+                all_sol = inverse_poly(pm.flib.stukel_logit(y, *j), coef)
+                # return all_sol[np.argmin(np.abs(all_sol))]
+                if len(all_sol)>1:
+                    raise RuntimeError
+                return all_sol[0]
 
-    a0 = pm.Normal('a0',0,.1,value=0,observed=True)
-    # a1 limits mixing.
-    a1 = pm.Normal('a1',0,.1,value=0,observed=True)
-    a = pm.Lambda('a',lambda a0=a0,a1=a1: [a0,a1])
+            j0 = pm.Normal('j0',0,.1,value=0,observed=True)
+            # j1 limits mixing.
+            j1 = pm.Normal('j1',0,.1,value=0,observed=True)
+            j = pm.Lambda('j',lambda j0=j0,j1=j1: [j0,j1])
             
             m = pm.Uninformative('m',value=-25)
             @pm.deterministic(trace=False)
