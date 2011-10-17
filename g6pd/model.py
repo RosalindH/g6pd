@@ -81,37 +81,37 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
             # The nugget variance.
             V = pm.Exponential('V', .1, value=.1)
 
-            # @pm.potential
-            # def V_constraint(V=V):
-            #    if V<.1:
-            #        return -np.inf
-            #    else:
-            #        return 0
+            @pm.potential
+            def V_constraint(V=V):
+                if V<.1:
+                    return -np.inf
+                else:
+                    return 0
             
-            coef = np.array([-0.23802427, 0.63047883, -0.12580110, -0.01148692])
+            #coef = np.array([-0.23802427, 0.63047883, -0.12580110, -0.01148692])
 
-            def poly(x,coef=coef):
-                return np.sum([c_*x**(power) for (power, c_) in enumerate(coef)], axis=0)
+            #def poly(x,coef=coef):
+            #    return np.sum([c_*x**(power) for (power, c_) in enumerate(coef)], axis=0)
 
-            def linkfn(x, j=[0,0], coef=coef):
-                return pm.flib.stukel_invlogit(poly(x,coef), *j)
+            #def linkfn(x, j=[0,0], coef=coef):
+            #    return pm.flib.stukel_invlogit(poly(x,coef), *j)
 
-            def inverse_poly(y, coef=coef):
-                poly = coef[::-1] + np.array([0,0,0,-y])
-                roots = filter(lambda x: not x.imag, np.roots(poly))
-                return np.array(roots).real
+            #def inverse_poly(y, coef=coef):
+            #    poly = coef[::-1] + np.array([0,0,0,-y])
+            #    roots = filter(lambda x: not x.imag, np.roots(poly))
+            #    return np.array(roots).real
 
-            def inverse_linkfn(y, j=[0,0], coef=coef, range=range):
-                all_sol = inverse_poly(pm.flib.stukel_logit(y, *j), coef)
-                # return all_sol[np.argmin(np.abs(all_sol))]
-                if len(all_sol)>1:
-                    raise RuntimeError
-                return all_sol[0]
+            #def inverse_linkfn(y, j=[0,0], coef=coef, range=range):
+            #    all_sol = inverse_poly(pm.flib.stukel_logit(y, *j), coef)
+            #    # return all_sol[np.argmin(np.abs(all_sol))]
+            #    if len(all_sol)>1:
+            #        raise RuntimeError
+            #    return all_sol[0]
 
-            j0 = pm.Normal('j0',0,.1,value=0,observed=True)
-            # j1 limits mixing.
-            j1 = pm.Normal('j1',0,.1,value=0,observed=True)
-            j = pm.Lambda('j',lambda j0=j0,j1=j1: [j0,j1])
+            #j0 = pm.Normal('j0',0,.1,value=0,observed=True)
+            ## j1 limits mixing.
+            #j1 = pm.Normal('j1',0,.1,value=0,observed=True)
+            #j = pm.Lambda('j',lambda j0=j0,j1=j1: [j0,j1])
             
             m = pm.Uninformative('m',value=-25)
             @pm.deterministic(trace=False)
