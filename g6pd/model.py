@@ -160,21 +160,21 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
     for i in xrange(len(male_pos)/grainsize+1):
         sl = slice(i*grainsize,(i+1)*grainsize,None)
         if len(male_pos[sl])>0:
-        # Nuggeted field in this cluster
-        eps_p_f_d.append(pm.Normal('eps_p_f_%i'%i, sp_sub.f_eval[fi[sl]], 1./V, trace=False))
+            # Nuggeted field in this cluster
+            eps_p_f_d.append(pm.Normal('eps_p_f_%i'%i, sp_sub.f_eval[fi[sl]], 1./V, trace=False))
 
-        # The allele frequency
-        s_d.append(pm.Lambda('s_%i'%i,lambda lt=eps_p_f_d[-1]: invlogit(lt), trace=False))
+            # The allele frequency
+            s_d.append(pm.Lambda('s_%i'%i,lambda lt=eps_p_f_d[-1]: invlogit(lt), trace=False))
 
-        where_male = np.where(True-np.isnan(n_male[sl]))[0]
-        where_fem = np.where(True-np.isnan(n_fem[sl]))[0]
-        if len(where_male) > 0:
-            male_d.append(pm.Binomial('male_%i'%i, n_male[sl][where_male], s_d[-1][where_male], value=male_pos[sl][where_male], observed=True))
-        if len(where_fem) > 0:
-            het_def_d.append(pm.Beta('het_def_%i'%i, alpha=a, beta=b, size=len(where_fem), trace=False))
-            p = s_d[-1][where_fem]
-            p_def = pm.Lambda('p_def', lambda p=p, h=het_def_d[-1]: p_fem_def(p, h), trace=False)
-            fem_d.append(pm.Binomial('fem_%i'%i, n_fem[sl][where_fem], p_def, value=fem_pos[sl][where_fem], observed=True))
+            where_male = np.where(True-np.isnan(n_male[sl]))[0]
+            where_fem = np.where(True-np.isnan(n_fem[sl]))[0]
+            if len(where_male) > 0:
+                male_d.append(pm.Binomial('male_%i'%i, n_male[sl][where_male], s_d[-1][where_male], value=male_pos[sl][where_male], observed=True))
+            if len(where_fem) > 0:
+                het_def_d.append(pm.Beta('het_def_%i'%i, alpha=a, beta=b, size=len(where_fem), trace=False))
+                p = s_d[-1][where_fem]
+                p_def = pm.Lambda('p_def', lambda p=p, h=het_def_d[-1]: p_fem_def(p, h), trace=False)
+                fem_d.append(pm.Binomial('fem_%i'%i, n_fem[sl][where_fem], p_def, value=fem_pos[sl][where_fem], observed=True))
     
     # The field plus the nugget
     @pm.deterministic
