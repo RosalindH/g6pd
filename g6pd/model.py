@@ -50,13 +50,13 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
     """
     
     # How many nuggeted field points to handle with each step method
-    grainsize = 10
+        grainsize = 10
 
     # Unique data locations
-    data_mesh, logp_mesh, fi, ui, ti = uniquify(lon,lat)
+        data_mesh, logp_mesh, fi, ui, ti = uniquify(lon,lat)
 
-    a = pm.Exponential('a', .01, value=1)
-    b = pm.Exponential('b', .01, value=1)
+        a = pm.Exponential('a', .01, value=1)
+        b = pm.Exponential('b', .01, value=1)
 
     
     init_OK = False
