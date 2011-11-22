@@ -39,10 +39,10 @@ threshold_val = 0.0001
 max_p_above = 0.0001
 
 def mean_fn(x,m):
-	return pm.gp.zero_fn(x)+m
+    return pm.gp.zero_fn(x)+m
     
 def p_fem_def(p,h):
-	return p**2 + 2*p*(1-p)*h
+    return p**2 + 2*p*(1-p)*h
 
 def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
     """
@@ -50,30 +50,30 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
     """
     
     # How many nuggeted field points to handle with each step method
-	grainsize = 10
+    grainsize = 10
 
     # Unique data locations
-	data_mesh, logp_mesh, fi, ui, ti = uniquify(lon,lat)
+    data_mesh, logp_mesh, fi, ui, ti = uniquify(lon,lat)
+
+    a = pm.Exponential('a', .01, value=1)
+    b = pm.Exponential('b', .01, value=1)
+
     
-	a = pm.Exponential('a', .01, value=1)
-	b = pm.Exponential('b', .01, value=1)
-    
-        
-	init_OK = False
-	while not init_OK:
-		try:
+    init_OK = False
+    while not init_OK:
+        try:
             # The partial sill.
-			amp = pm.Exponential('amp', .1, value=1.)
+            amp = pm.Exponential('amp', .1, value=1.)
 
             # The range parameters. Units are RADIANS. 
             # 1 radian = the radius of the earth, about 6378.1 km
-			scale = pm.Exponential('scale', .1, value=.08)
-			@pm.potential
-			def scale_constraint (scale=scale) :
-				if scale>.5:
-	    			return -np.inf
-				else:
-					return 0
+            scale = pm.Exponential('scale', .1, value=.08)
+            @pm.potential
+            def scale_constraint (scale=scale) :
+                if scale>.5:
+                    return -np.inf
+                else:
+                    return 0
 
             # This parameter controls the degree of differentiability of the field.
 			diff_degree = pm.Uniform('diff_degree', .01, 3, value=0.5, observed=True)
