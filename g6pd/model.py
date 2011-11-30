@@ -89,7 +89,7 @@ def make_model(lon,lat,input_data,covariate_keys,n_male,male_pos,n_fem,fem_pos):
             # else:
             # return 0
             
-            coef = np.array([0.15200304, 1.12465599, 0.03658898, 0.00342442])
+            coef = np.array([0.5020029, 1.91086443, 0.3917332, 0.04457054])
 
 
             def poly(x,coef=coef):
